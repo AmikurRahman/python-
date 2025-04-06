@@ -1,0 +1,89 @@
+LabReport02-IDDFS
+
+• TITLE OF THE LAB REPORT EXPERIMENT  
+
+Pathfinding in 2D Maze Using Iterative Deepening Depth-First Search (IDDFS)
+
+##IMPLEMENTATION :
+ 
+  class IDDFS:
+    def __init__(self, grid, start, target):
+        self.grid = grid
+        self.start = start
+        self.target = target
+        self.rows = len(grid)
+        self.cols = len(grid[0])
+        self.path = []
+        self.traversal_order = []
+
+    def is_valid(self, x, y, visited):
+        return 0 <= x < self.rows and 0 <= y < self.cols and \
+               self.grid[x][y] == 0 and not visited[x][y]
+
+    def dfs(self, x, y, depth, limit, visited):
+        if depth > limit:
+            return False
+
+        visited[x][y] = True
+        self.traversal_order.append((x, y))
+        self.path.append((x, y))
+
+        if (x, y) == self.target:
+            return True
+
+        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nx, ny = x + dx, y + dy
+            if self.is_valid(nx, ny, visited):
+                if self.dfs(nx, ny, depth + 1, limit, visited):
+                    return True
+
+        self.path.pop()
+         return False
+
+  def iddfs(self, max_depth):
+        for limit in range(max_depth + 1):
+            visited = [[False]*self.cols for _ in range(self.rows)]
+            self.traversal_order = []
+            self.path = []
+            if self.dfs(self.start[0], self.start[1], 0, limit, visited):
+                print(f"Path found at depth {limit} using IDDFS")
+                print("Traversal Order:", self.traversal_order)
+                return
+
+        print(f"Path not found at max depth {max_depth} using IDDFS")
+
+
+def run_case(grid, start, target, max_depth=50):
+    print("Grid:")
+    for row in grid:
+        print(" ".join(map(str, row)))
+    print(f"Start: {start}, Target: {target}\n")
+
+    solver = IDDFS(grid, start, target)
+    solver.iddfs(max_depth)
+    print("-"*50 + "\n")
+
+
+# Case 1
+case1_grid = [
+    [0, 0, 1, 0],
+    [1, 0, 1, 0],
+    [0, 0, 0, 0],
+    [1, 1, 0, 1]
+]
+case1_start = (0, 0)
+case1_target = (2, 3)
+
+# Case 2
+case2_grid = [
+    [0, 1, 0],
+    [0, 1, 0],
+    [0, 1, 0]
+]
+case2_start = (0, 0)
+case2_target = (2, 2)
+
+# Run both cases
+run_case(case1_grid, case1_start, case1_target)
+
+run_case(case2_grid, case2_start, case2_target)
